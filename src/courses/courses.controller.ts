@@ -29,8 +29,7 @@ export class CoursesController {
   }
 
   @Post()
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async store(@Body() body: StoreCourseDto): Promise<void> {
+  async store(@Body() body: StoreCourseDto): Promise<Course> {
     return this.coursesService.store(body);
   }
 

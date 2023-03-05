@@ -16,26 +16,33 @@ export class CoursesService {
   ) {}
 
   async index(): Promise<Course[]> {
-    return this.courseRepository.find();
+    return this.courseRepository.find({
+      relations: ['tags'],
+    });
   }
 
   async show(id: string): Promise<Course> {
-    const course = await this.courseRepository.findOne({ where: { id } });
+    const course = await this.courseRepository.findOne({
+      where: { id },
+      relations: ['tags'],
+    });
     if (!course) {
       throw new NotFoundException();
     }
     return course;
   }
 
-  async store(course: StoreCourseDto): Promise<void> {
-    const tags = await Promise.all(course.tags.map(this.preloadTagByName));
+  async store(course: StoreCourseDto): Promise<Course> {
+    const tags = await Promise.all(
+      course.tags.map((name) => this.preloadTagByName(name)),
+    );
     const courseCreated = this.courseRepository.create({ ...course, tags });
-    await this.courseRepository.save(courseCreated);
+    return this.courseRepository.save(courseCreated);
   }
 
   async update(id: string, updateCourse: UpdateCourseDto): Promise<void> {
     const tags = await Promise.all(
-      updateCourse.tags?.map(this.preloadTagByName),
+      updateCourse.tags?.map((name) => this.preloadTagByName(name)),
     );
     const course = await this.courseRepository.preload({
       id,

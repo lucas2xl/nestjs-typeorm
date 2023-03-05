@@ -13,7 +13,7 @@ services:
       - db
     networks:
       - api-network
-    command: "/usr/app/docker-entrypoint.sh"
+    # command: "/usr/app/docker-entrypoint.sh"
 
   db:
     build: .docker/postgres
@@ -21,11 +21,30 @@ services:
     restart: always
     tty: true
     ports:
-      - ${DB_PORT}:${DB_PORT}
+      - ${DB_PORT}:5432
+    volumes:
+      - .docker/dbdata:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
+    networks:
+      - api-network
+
+  dbtest:
+    build: .docker/postgres
+    container_name: nestjs-typeorm-dbtest
+    restart: always
+    tty: true
+    ports:
+      - 5433:5432
+    volumes:
+      - .docker/dbdatatest:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: testdb
+    
     networks:
       - api-network
 
