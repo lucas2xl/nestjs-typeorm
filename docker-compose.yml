@@ -11,9 +11,6 @@ services:
       - .:/usr/app
     depends_on:
       - db
-    networks:
-      - api-network
-    # command: "/usr/app/docker-entrypoint.sh"
 
   db:
     build: .docker/postgres
@@ -28,8 +25,6 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-    networks:
-      - api-network
 
   dbtest:
     build: .docker/postgres
@@ -44,10 +39,3 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: docker
       POSTGRES_DB: testdb
-    
-    networks:
-      - api-network
-
-networks:
-  api-network:
-    driver: bridge
